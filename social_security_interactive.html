@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f7fc">
+<title>Social Security | Retirement Age Explorer</title>
+<style>
+  :root { color-scheme: light; font-family: system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+          background: #f5f7fc; color: #192947; }
+  * { box-sizing:border-box }
+  body { margin:0; padding:26px 13px 50px; }
+  main { max-width:960px; margin:auto; }
+  .eyebrow { color:#315fae; text-transform:uppercase; letter-spacing:.12em;
+             font-weight:800; font-size:.72rem; }
+  h1 { font-size:clamp(1.6rem,3.6vw,2.35rem); margin:8px 0 9px; letter-spacing:-.035em; }
+  .intro { margin:0 0 20px; color:#5d6b80; line-height:1.55; max-width:800px; }
+  .panel { background:white; border:1px solid #e0e7f0; border-radius:20px;
+           padding:clamp(15px,3.5vw,28px); margin:0 0 15px;
+           box-shadow:0 8px 25px rgba(37,65,108,.055); }
+  h2 { font-size:1.12rem; margin:0 0 13px; }
+  .dob-row { display:flex; flex-wrap:wrap; gap:12px 18px; align-items:end; }
+  .field { min-width:215px; }
+  label { display:block; font-weight:700; margin-bottom:8px; font-size:.93rem; }
+  input[type=date], input[type=number] { background:white; border:1.5px solid #b7c9e4;
+       border-radius:11px; font:inherit; color:#1c335b; min-height:44px;
+       padding:9px 11px; max-width:100%; }
+  input[type=date] { width:208px; }
+  input:focus-visible, button:focus-visible { outline:3px solid #88b8ff; outline-offset:2px; }
+  button { font:inherit; border:1px solid #cddbf1; background:#f5f8ff; color:#275cad;
+           padding:10px 13px; border-radius:11px; font-weight:700; cursor:pointer; }
+  button:hover { background:#eaf2ff; }
+  #open-calendar { min-height:44px; }
+  .dob-help { font-size:.8rem; color:#778499; margin:9px 0 0; }
+  .error { color:#a82a2a; background:#fff2f2; border:1px solid #ffdbdb;
+           border-radius:10px; padding:10px; margin-top:12px; font-size:.9rem; }
+  .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:18px; }
+  .stat { background:#f6f9ff; border:1px solid #e8effb; padding:13px; border-radius:13px; }
+  .stat span { display:block; color:#60708b; font-size:.79rem; margin-bottom:4px; }
+  .stat strong { font-size:1rem; line-height:1.3; }
+  .status { margin-top:14px; display:flex; gap:10px; align-items:start;
+            background:#ebf8f3; border:1px solid #cfebdb; padding:11px 13px; border-radius:12px;
+            line-height:1.4; font-size:.91rem; }
+  .status.wait { background:#fff8e9; border-color:#f7e4bc; }
+  .status .icon { font-size:1.12rem; }
+  .status strong { display:block; margin-bottom:1px; }
+  .top { display:flex; flex-wrap:wrap; align-items:flex-end;
+         justify-content:space-between; gap:15px; }
+  .kicker { font-weight:700; color:#4e5d76; font-size:.94rem;
+            display:flex; align-items:center; gap:10px; }
+  .bar { background:#2f6ce5; width:5px; height:37px; border-radius:9px; }
+  .big-number { font-size:clamp(2.8rem,7vw,4.05rem); font-weight:800;
+                letter-spacing:-.05em; line-height:1.07; margin-top:9px; color:#174b9b; }
+  .big-number small { font-size:.48em; }
+  .age-label { color:#65738b; font-size:.96rem; margin-top:5px; }
+  .date-card { background:#f1f6ff; border:1px solid #dfeaff; border-radius:13px; padding:12px 15px; }
+  .date-card span { display:block; color:#697b95; font-size:.78rem; }
+  .date-card strong { display:block; color:#24467e; margin-top:3px; }
+  .selected-warning { font-size:.83rem; color:#80612e; margin:12px 0 0; min-height:1.3em; }
+  .chart-wrap { margin-top:9px; }
+  svg { display:block; width:100%; max-width:100%; height:auto;
+        touch-action:pan-y; cursor:crosshair; user-select:none; }
+  .gridline { stroke:#e8eef7; stroke-width:1; stroke-dasharray:5 7; }
+  .axistext { fill:#8190a7; font-size:15px; }
+  .selector { stroke:#334761; stroke-width:1.5; }
+  .curve { fill:none; stroke:#a3b9f2; stroke-width:3.3; stroke-linecap:round; stroke-linejoin:round; }
+  .activeCurve { fill:none; stroke:#316ee8; stroke-width:3.3; stroke-linecap:round; stroke-linejoin:round; }
+  .dot { fill:#316ee8; stroke:white; stroke-width:2.7; }
+  .today-guide { stroke:#10a48f; stroke-width:1.8; stroke-dasharray:5 5; opacity:.9; }
+  .today-text { fill:#0a8679; font-size:13px; font-weight:700; text-anchor:middle; }
+  .chart-age { fill:#19345d; font-size:16px; font-weight:800; text-anchor:middle; }
+  .controls { margin-top:3px; }
+  .control-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
+                 margin-bottom:10px; }
+  .control-row label { margin:0; }
+  input[type=range] { display:block; width:100%; cursor:pointer; accent-color:#316ee8; }
+  .ticks { display:flex; justify-content:space-between; font-size:.79rem; color:#7c8aa2; padding:4px 1px 0; }
+  .milestones { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .milestones button { border-radius:99px; padding:8px 12px; font-size:.87rem; }
+  .milestones button[aria-pressed=true] { color:#fff; background:#326ce5; border-color:#326ce5; }
+  .calculator { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:25px;
+                padding-top:23px; border-top:1px solid #e9eef7; }
+  .money { display:block; width:100%; max-width:235px; font-size:1.1rem!important; }
+  .help { font-size:.81rem; color:#728097; line-height:1.55; margin:7px 0 0; }
+  .estimate { background:#f0f6ff; border-radius:14px; padding:15px 18px; }
+  .estimate .caption { font-size:.83rem; font-weight:750; color:#4d6280; }
+  .estimate strong { display:block; color:#2458a2; font-size:1.9rem; margin-top:4px; }
+  .foot { font-size:.82rem; line-height:1.7; color:#66758d; margin:11px 5px 15px; }
+  .foot a { color:#295cba; }
+  @media(max-width:740px) { .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media(max-width:560px) { body { padding:12px 9px 30px; } .panel { border-radius:15px; }
+    .calculator { grid-template-columns:1fr; gap:13px; } .axistext { font-size:17px; }
+    .date-card { width:100%; } .field { min-width:0; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Social Security · Retirement planning</div>
+  <h1>Retirement benefit explorer</h1>
+  <p class="intro">Enter your date of birth using the calendar. Your full retirement age,
+    earliest possible retirement-benefit month, and benefit chart will update automatically.</p>
+
+  <section class="panel" aria-label="Date of birth and retirement eligibility">
+    <h2>1. Date of birth &amp; eligibility</h2>
+    <div class="dob-row">
+      <div class="field">
+        <label for="dob">Date of birth</label>
+        <input type="date" id="dob" value="1964-09-17" min="1933-01-02" required>
+      </div>
+      <button type="button" id="open-calendar" aria-label="Choose birth date from calendar">📅 Open calendar</button>
+    </div>
+    <p class="dob-help">Tap the calendar icon or the date field. Supports birth dates from January 2, 1933 onward.</p>
+    <div id="input-error" class="error" role="alert" hidden></div>
+    <div id="eligibility-details">
+      <div class="stats">
+        <div class="stat"><span>Age today</span><strong id="current-age">—</strong></div>
+        <div class="stat"><span>Full retirement age (FRA)</span><strong id="fra-age">—</strong></div>
+        <div class="stat"><span>First possible benefit month</span><strong id="earliest-month">—</strong></div>
+        <div class="stat"><span>Month at age 70</span><strong id="age70-month">—</strong></div>
+      </div>
+      <div id="eligibility-status" class="status" aria-live="polite">
+        <span class="icon" aria-hidden="true">✓</span><div><strong>Checking eligibility...</strong><span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="chart-panel" aria-label="Interactive Social Security benefit chart">
+    <h2>2. Explore your claiming age</h2>
+    <div class="top">
+      <div>
+        <div class="kicker"><span class="bar" aria-hidden="true"></span>Percentage of full retirement benefit</div>
+        <div id="pct" class="big-number" aria-live="polite">—</div>
+        <div id="age-label" class="age-label">Select a claiming age</div>
+      </div>
+      <div class="date-card"><span>Benefits start in</span><strong id="claim-date">—</strong></div>
+    </div>
+    <p id="selected-warning" class="selected-warning" aria-live="polite"></p>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 800 410" role="img" aria-label="Interactive line chart of benefit percentages by claiming age between 62 and 70">
+        <g id="grid"></g>
+        <path id="full-path" class="curve"></path>
+        <path id="active-path" class="activeCurve"></path>
+        <line id="today-line" class="today-guide" x1="0" x2="0" y1="35" y2="346" visibility="hidden"></line>
+        <text id="today-text" class="today-text" x="0" y="35" visibility="hidden">Now</text>
+        <line id="guide" class="selector" x1="0" x2="0" y1="35" y2="346"></line>
+        <circle id="dot" class="dot" cx="0" cy="0" r="8.5"></circle>
+        <text id="age-on-chart" class="chart-age" x="0" y="23">—</text>
+      </svg>
+    </div>
+    <div class="controls">
+      <div class="control-row">
+        <label for="age-slider">Claiming age (adjustable by month)</label>
+        <button type="button" id="earliest-btn">Jump to first eligible month</button>
+      </div>
+      <input type="range" id="age-slider" min="0" max="96" step="1" value="12"
+             aria-label="Month to begin Social Security retirement benefits">
+      <div class="ticks"><span>62</span><span>63</span><span>64</span><span>65</span><span>66</span><span>67</span><span>68</span><span>69</span><span>70</span></div>
+      <div id="milestones" class="milestones" aria-label="Common claiming ages"></div>
+    </div>
+    <div class="calculator">
+      <div>
+        <label for="full-benefit">Estimated monthly benefit at full retirement age ($)</label>
+        <input id="full-benefit" class="money" type="number" min="0" step="1" inputmode="decimal"
+               placeholder="e.g. 3000" value="">
+        <p class="help">Optional: use your own estimated benefit at FRA from your Social Security statement.</p>
+      </div>
+      <div class="estimate" aria-live="polite">
+        <div class="caption">Estimated monthly benefit if claimed then</div>
+        <strong id="monthly-result">—</strong>
+        <p id="annual-result" class="help">Enter a benefit amount to see a dollar estimate.</p>
+      </div>
+    </div>
+  </section>
+  <p class="foot"><strong>Important:</strong> Age eligibility alone does not establish entitlement.
+    You must have sufficient covered work credits (usually 40) and apply for benefits.
+    The chart estimates <em>your own retirement benefit</em>, not spousal, survivor or disability benefits.
+    Claiming before FRA while working may cause payments to be withheld under the earnings test.
+    Benefits are generally paid the month <em>after</em> the month they are due.
+    Amounts exclude future cost-of-living adjustments, earnings changes, taxes, Medicare premiums,
+    and some timing details for delayed retirement credits.</p>
+  <p class="foot">SSA references:
+    <a href="https://www.ssa.gov/oact/progdata/nra.html" target="_blank" rel="noopener">full retirement age</a> ·
+    <a href="https://www.ssa.gov/planners/retire/1937.html" target="_blank" rel="noopener">early retirement reductions</a> ·
+    <a href="https://www.ssa.gov/benefits/retirement/planner/delayret.html" target="_blank" rel="noopener">delayed retirement credits</a> ·
+    <a href="https://secure.ssa.gov/poms.nsf/lnx/0300615015" target="_blank" rel="noopener">how the day of birth affects eligibility</a>.</p>
+</main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const fmtCurrency = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD', maximumFractionDigits:0});
+const fmtMonth = new Intl.DateTimeFormat('en-US', {month:'long',year:'numeric',timeZone:'UTC'});
+const percentFmt = p => (Math.round(p * 10) / 10).toFixed(1).replace(/\.0$/, '');
+const monthNumber = (y,m) => y*12 + m-1;  // month is 1-12
+const monthDate = index => new Date(Date.UTC(Math.floor(index/12),index%12,1));
+const monthLabel = index => fmtMonth.format(monthDate(index));
+const monthNow = () => {let now=new Date(); return monthNumber(now.getFullYear(),now.getMonth()+1);};
+const chartBox={left:63,right:772,top:39,bottom:342};
+const x=m => chartBox.left + m/96*(chartBox.right-chartBox.left);
+const y=p => chartBox.bottom-(p-60)/80*(chartBox.bottom-chartBox.top);
+let model=null, chosenMonths=12, dragging=false;
+
+function parseDate(value) {
+  if (!/^\d{4}-\d\d-\d\d$/.test(value)) return null;
+  const [yr,mo,day]=value.split('-').map(Number);
+  const test=new Date(Date.UTC(yr,mo-1,day));
+  if (test.getUTCFullYear()!==yr || test.getUTCMonth()!==mo-1 || test.getUTCDate()!==day) return null;
+  const now=new Date();
+  const today=new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()));
+  if (test>today || test<new Date(Date.UTC(1933,0,2))) return null;
+  return {yr,mo,day,exactDate:test};
+}
+
+function fullRetirementMonths(birthYear) {
+  // Age in months: SSA full retirement age table.
+  if (birthYear<=1937) return 65*12;
+  if (birthYear<=1942) return 65*12+(birthYear-1937)*2;
+  if (birthYear<=1954) return 66*12;
+  if (birthYear<=1959) return 66*12+(birthYear-1954)*2;
+  return 67*12;
+}
+function annualDelayRate(birthYear) {
+  if (birthYear<=1934) return 5.5;
+  if (birthYear<=1936) return 6;
+  if (birthYear<=1938) return 6.5;
+  if (birthYear<=1940) return 7;
+  if (birthYear<=1942) return 7.5;
+  return 8;
+}
+function ageText(months) {
+  const yrs=Math.floor(months/12), remain=months%12;
+  return remain?`${yrs} years, ${remain} month${remain===1?'':'s'}`:`${yrs} years`;
+}
+function ageShort(months) {
+  const yrs=Math.floor(months/12), remain=months%12;
+  return remain?`${yrs}y ${remain}m`:`${yrs}`;
+}
+function benefitPercent(monthOffset, fraOffset, delayedAnnual) {
+  if (monthOffset<fraOffset) {
+    const early=fraOffset-monthOffset;
+    return 100-Math.min(early,36)*5/9-Math.max(0,early-36)*5/12;
+  }
+  return 100+(monthOffset-fraOffset)*delayedAnnual/12;
+}
+function buildModel(birth) {
+  const nominalBirthMonth=monthNumber(birth.yr,birth.mo);
+  // SSA considers birthdays on the 1st to have attained the age in the previous month.
+  const adjustedBirthMonth=nominalBirthMonth-(birth.day===1?1:0);
+  const effectiveYear=(birth.day===1 && birth.mo===1)?birth.yr-1:birth.yr;
+  const fraMonths=fullRetirementMonths(effectiveYear);
+  const fraOffset=fraMonths-62*12;
+  const annualRate=annualDelayRate(effectiveYear);
+  const anchor62=adjustedBirthMonth+62*12;
+  // Earliest retirement entitlement is the first full calendar month age 62:
+  // birth day 2 => 62nd birthday month; day 1 or >=3 => month after age-62 attainment.
+  const minM=birth.day===2?0:1;
+  const earliestMonth=anchor62+minM;
+  const fraMonth=adjustedBirthMonth+fraMonths;
+  const age70Month=adjustedBirthMonth+70*12;
+  const points=Array.from({length:97-minM},(_,i)=> {
+    let months=i+minM;
+    return {months,month:anchor62+months,
+            percent:benefitPercent(months,fraOffset,annualRate)};
+  });
+  return {birth,fraMonths,fraOffset,annualRate,anchor62,minM,earliestMonth,
+          fraMonth,age70Month,points};
+}
+function ageToday(birth) {
+  const now=new Date();
+  let total=(now.getFullYear()-birth.yr)*12+(now.getMonth()+1-birth.mo);
+  if(now.getDate()<birth.day)total--;
+  return ageText(Math.max(0,total));
+}
+function eligibilityMessage(mod) {
+  const thisMonth=monthNow();
+  if (thisMonth < mod.earliestMonth-4) return {
+    wait:true,title:'Not yet old enough to receive retirement benefits',
+    body:`Your first possible month is ${monthLabel(mod.earliestMonth)}. You can generally apply up to four months before you want benefits to start.`};
+  if (thisMonth < mod.earliestMonth) return {
+    wait:true,title:'Approaching retirement-benefit eligibility',
+    body:`Your first possible benefit month is ${monthLabel(mod.earliestMonth)}. You may now be within SSA's advance application window.`};
+  if (thisMonth >= mod.age70Month) return {
+    wait:false,title:'Age-eligible; delaying past age 70 adds no retirement credits',
+    body:'You have passed the month you reached age 70. If you have not applied, contact SSA about available starting dates.'};
+  if (thisMonth >= mod.fraMonth) return {
+    wait:false,title:'You have reached full retirement age',
+    body:`Your FRA month was ${monthLabel(mod.fraMonth)}. Delaying up to 70 can increase your benefit.`};
+  return {wait:false,title:'You are old enough to claim retirement benefits',
+      body:`Age eligibility began in ${monthLabel(mod.earliestMonth)}. Earnings limits can affect checks before full retirement age.`};
+}
+function createSvg(tag,attrs,parent,text) {
+  const el=document.createElementNS(NS,tag);
+  Object.entries(attrs).forEach(([key,value])=>el.setAttribute(key,value));
+  if (text!==undefined) el.textContent=text;
+  parent.append(el);
+  return el;
+}
+function pathFor(points) {
+  return points.map((p,i)=>(i===0?'M':'L')+x(p.months).toFixed(2)+','+y(p.percent).toFixed(2)).join(' ');
+}
+function drawChart() {
+  const grid=$('grid'); grid.replaceChildren();
+  [60,80,100,120,140].forEach(v=>{
+    const yy=y(v);
+    createSvg('line',{class:'gridline',x1:chartBox.left,y1:yy,x2:chartBox.right,y2:yy},grid);
+    createSvg('text',{class:'axistext',x:chartBox.left-11,y:yy+5,'text-anchor':'end'},grid,v+'%');
+  });
+  for(let m=0;m<=96;m+=12)
+    createSvg('text',{class:'axistext',x:x(m),y:chartBox.bottom+33,'text-anchor':'middle'},grid,String(62+m/12));
+  createSvg('text',{class:'axistext',x:(chartBox.left+chartBox.right)/2,y:chartBox.bottom+59,'text-anchor':'middle'},grid,'Age when benefits start');
+  $('full-path').setAttribute('d',pathFor(model.points));
+  const currentOffset=monthNow()-model.anchor62;
+  const visible=currentOffset>=model.minM && currentOffset<=96;
+  for(const id of ['today-line','today-text']) $(id).setAttribute('visibility',visible?'visible':'hidden');
+  if(visible) {
+    $('today-line').setAttribute('x1',x(currentOffset));
+    $('today-line').setAttribute('x2',x(currentOffset));
+    $('today-text').setAttribute('x',x(currentOffset));
+  }
+}
+function updateEstimates(pct) {
+  const val=$('full-benefit').value.trim();
+  const value=val===''?NaN:Number(val);
+  if(Number.isFinite(value) && value>=0) {
+    const monthly=value*pct/100;
+    $('monthly-result').textContent=fmtCurrency.format(monthly);
+    $('annual-result').textContent=`Approximately ${fmtCurrency.format(monthly*12)} per year before adjustments.`;
+  } else {
+    $('monthly-result').textContent='—';
+    $('annual-result').textContent='Enter a benefit amount to see a dollar estimate.';
+  }
+}
+function chooseAge(monthOffset) {
+  if(!model)return;
+  chosenMonths=Math.max(model.minM,Math.min(96,Math.round(monthOffset)));
+  $('age-slider').value=String(chosenMonths);
+  const p=model.points[chosenMonths-model.minM];
+  $('pct').innerHTML=percentFmt(p.percent)+'<small>%</small>';
+  $('age-label').textContent=`Claiming at SSA age ${ageText(62*12+chosenMonths)}`;
+  $('claim-date').textContent=monthLabel(p.month);
+  $('age-on-chart').textContent=ageShort(62*12+chosenMonths);
+  for(const id of ['guide']) {$(id).setAttribute('x1',x(chosenMonths));$(id).setAttribute('x2',x(chosenMonths));}
+  $('dot').setAttribute('cx',x(chosenMonths));
+  $('dot').setAttribute('cy',y(p.percent));
+  $('age-on-chart').setAttribute('x',x(chosenMonths));
+  $('active-path').setAttribute('d',pathFor(model.points.filter(point=>point.months<=chosenMonths)));
+  const nowMonth=monthNow();
+  $('selected-warning').textContent=p.month<nowMonth
+    ?'This start month is in the past. It is a comparison only; SSA limits retroactive claiming.'
+    :(p.month===nowMonth?'This is the current month. Actual eligibility also requires SSA work credits and an application.':' ');
+  document.querySelectorAll('#milestones [data-month]').forEach(b=>
+    b.setAttribute('aria-pressed',String(Number(b.dataset.month)===chosenMonths)));
+  $('age-slider').setAttribute('aria-valuetext',`${ageText(62*12+chosenMonths)}, starting ${monthLabel(p.month)}, ${percentFmt(p.percent)} percent`);
+  updateEstimates(p.percent);
+}
+function updateMilestones() {
+  const items=[{m:model.minM,name:'First eligible'},
+               {m:12,name:'63'}, {m:36,name:'65'},
+               {m:model.fraOffset,name:'FRA'}, {m:96,name:'70'}];
+  const group=$('milestones');group.replaceChildren();
+  const seen=new Set();
+  items.forEach(item=>{
+    if(seen.has(item.m))return;
+    seen.add(item.m);
+    const p=model.points[item.m-model.minM];
+    const b=document.createElement('button');
+    b.type='button'; b.dataset.month=String(item.m);
+    b.textContent=`${item.name} · ${percentFmt(p.percent)}%`;
+    b.addEventListener('click',()=>chooseAge(item.m));
+    group.append(b);
+  });
+}
+function refreshBirthDate() {
+  const birth=parseDate($('dob').value);
+  if (!birth) {
+    $('input-error').textContent='Enter a valid past date of birth, on or after January 2, 1933.';
+    $('input-error').hidden=false;
+    $('eligibility-details').hidden=true;
+    $('chart-panel').hidden=true;
+    model=null;return;
+  }
+  $('input-error').hidden=true;
+  $('eligibility-details').hidden=false;
+  $('chart-panel').hidden=false;
+  model=buildModel(birth);
+  $('current-age').textContent=ageToday(birth);
+  $('fra-age').textContent=ageText(model.fraMonths);
+  $('earliest-month').textContent=monthLabel(model.earliestMonth);
+  $('age70-month').textContent=monthLabel(model.age70Month);
+  const info=eligibilityMessage(model);
+  const status=$('eligibility-status'); status.classList.toggle('wait',info.wait);
+  status.replaceChildren();
+  const icon=document.createElement('span');icon.className='icon';icon.setAttribute('aria-hidden','true');icon.textContent=info.wait?'◷':'✓';
+  const body=document.createElement('div');const heading=document.createElement('strong');
+  heading.textContent=info.title;const description=document.createElement('span');description.textContent=info.body;
+  body.append(heading,description);status.append(icon,body);
+  $('age-slider').min=String(model.minM);
+  drawChart();updateMilestones();chooseAge(chosenMonths);
+}
+$('dob').addEventListener('input',refreshBirthDate);
+$('dob').addEventListener('change',refreshBirthDate);
+$('open-calendar').addEventListener('click',()=>{
+  const input=$('dob');
+  try { if(input.showPicker) input.showPicker(); else input.focus(); }
+  catch { input.focus(); }
+});
+$('age-slider').addEventListener('input',()=>chooseAge(Number($('age-slider').value)));
+$('full-benefit').addEventListener('input',()=>{ if(model) chooseAge(chosenMonths); });
+$('earliest-btn').addEventListener('click',()=>{if(model)chooseAge(model.minM);});
+function fromPointer(e) {
+  if(!model)return;
+  const pt=$('chart').createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+  const matrix=$('chart').getScreenCTM();if(!matrix)return;
+  const pos=pt.matrixTransform(matrix.inverse());
+  chooseAge((pos.x-chartBox.left)/(chartBox.right-chartBox.left)*96);
+}
+$('chart').addEventListener('pointerdown',e=>{
+  dragging=true;$('chart').setPointerCapture(e.pointerId);fromPointer(e);
+});
+$('chart').addEventListener('pointermove',e=>{if(dragging)fromPointer(e);});
+$('chart').addEventListener('pointerup',()=>{dragging=false;});
+$('chart').addEventListener('pointercancel',()=>{dragging=false;});
+// Initial calculation; subsequent DOB changes are entirely client-side.
+refreshBirthDate();
+</script>
+</body>
+</html>
