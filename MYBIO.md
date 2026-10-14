@@ -11,11 +11,11 @@ README.md
 100%
 # Tyler A. Treadway | Technical Portfolio
 
-**Business Analysis • Quality Assurance • API Integrations • Python • Applied AI**
+**AI Business Analysis • Quality Assurance • API Integrations • Python • Applied AI**
 
-Welcome! I'm a technology professional with experience spanning **insurance, banking, business analysis, and software quality assurance**. I enjoy translating business needs into clear technical requirements, validating complex integrations, and using data and automation to make processes more reliable.
+Welcome! I'm a technology professional with experience spanning **healthcare, insurance, banking, business analysis, and software quality assurance**. I enjoy translating business needs into clear technical requirements, validating complex integrations, and using data and automation to make processes more reliable.
 
-This repository highlights my hands-on projects, technical skills, and professional development. My focus is on opportunities in **Business Analysis, QA / Software Testing, API Integration, Data Analysis, and AI-enabled solutions**.
+This repository highlights my hands-on projects, technical skills, and professional development. My focus is on opportunities in **AI Business Analysis, QA / Software Testing, API Integration, Data Analysis, and AI-enabled solutions**.
 
 ## Professional Experience
 
