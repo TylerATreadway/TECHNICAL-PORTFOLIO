@@ -1,15 +1,3 @@
-
-None selected
-
-Skip to content
-Using Gmail with screen readers
-Conversations
-57% of 100 GB used
-Terms · Privacy · Program Policies
-Last account activity: 10 minutes ago
-Details
-README-3.md
-
 # Tyler A. Treadway | Technical Portfolio
 
 **Business Analysis · Quality Assurance · Python · API Integrations · Data Analytics**
