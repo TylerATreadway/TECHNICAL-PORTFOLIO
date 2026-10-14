@@ -1,83 +1,118 @@
 
+None selected
 
 Skip to content
 Using Gmail with screen readers
 Conversations
 57% of 100 GB used
 Terms · Privacy · Program Policies
-Last account activity: 0 minutes ago
-Currently being used in 2 other locations · Details
-README.md
-100%
+Last account activity: 10 minutes ago
+Details
+README-3.md
+
 # Tyler A. Treadway | Technical Portfolio
 
-**Business Analysis • Quality Assurance • API Integrations • Python • Applied AI**
+**Business Analysis · Quality Assurance · Python · API Integrations · Data Analytics**
 
-Welcome! I'm a technology professional with experience spanning **insurance, banking, business analysis, and software quality assurance**. I enjoy translating business needs into clear technical requirements, validating complex integrations, and using data and automation to make processes more reliable.
+Welcome to my technical portfolio. My background spans insurance technology, banking, business analysis, and software quality assurance. This repository brings together practical projects that demonstrate how I work with data, integrate systems, and communicate results.
 
-This repository highlights my hands-on projects, technical skills, and professional development. My focus is on opportunities in **Business Analysis, QA / Software Testing, API Integration, Data Analysis, and AI-enabled solutions**.
+## Featured Projects
 
-## Professional Experience
+| Project | Focus | Technologies |
+| --- | --- | --- |
+| [Call Center Analytics](APIs%20and%20Power%20BI/) | Import historical call data into SQL Server and visualize resolved and unresolved calls by agent | Python, Kaggle API, pandas, pyodbc, SQL Server, Power BI |
+| [Social Security Retirement Calculator](Python-Portfolio/SSA-Retirement-Calculator/) | Explore estimated retirement benefit percentages at different claiming ages | Python, HTML, interactive browser charts |
 
-### Plymouth Rock Assurance | Insurance Technology
-- Worked with **third-party data integrations**, including services such as **CARFAX**, as part of insurance-related workflows.
-- Validated **REST API** exchanges and **XSLT/XML** data transformations to help ensure information was transmitted and interpreted correctly.
-- Used **Python** for parsing and working with structured data.
-- Applied a quality-focused approach to identifying data discrepancies and supporting testing and troubleshooting.
+### Call Center Analytics with Python, SQL Server, and Power BI
 
-### TD Bank and Cape Cod Five | Financial Services
-- Gained professional experience in banking and customer-focused financial services environments.
-- Developed an understanding of business processes, accuracy, communication, and the importance of reliable information in regulated industries.
+This project connects data collection, preparation, database storage, and reporting in one workflow. It uses a Kaggle dataset containing 5,000 historical call records from January through March 2021.
 
-## Technical Skills
+**Data workflow:** Kaggle API → Python and pandas → Microsoft ODBC → SQL Server → Power BI → PDF report.
 
-| Area | Skills and Experience |
+The Python importer:
+
+- Downloads the dataset through the Kaggle API or reads a local Excel workbook.
+- Validates required columns, dates, call IDs, flags, and numeric values.
+- Converts call information into typed records for SQL Server.
+- Creates the `dbo.CallCenterCalls` table if it does not exist.
+- Inserts missing call IDs without deleting or updating existing records.
+- Supports a dry run that validates the data without changing the database.
+
+Power BI connects to the SQL Server table and displays a clustered column chart with resolved and unresolved call counts for each agent. The report is also available as a PDF for easy review.
+
+**Explore the project:**
+
+- [Python importer](APIs%20and%20Power%20BI/CallCenter/import_call_center.py)
+- [Power BI report (.pbix)](APIs%20and%20Power%20BI/PowerBI/BI_1.pbix)
+- [Calls by Agent report (.pdf)](APIs%20and%20Power%20BI/PowerBI/Calls_By_Agent.pdf)
+- [Project overview](APIs%20and%20Power%20BI/README.md)
+
+This project demonstrates API-based data retrieval, data validation, SQL loading, and business reporting. The dataset is historical practice data rather than a live call center feed.
+
+### Social Security Retirement Calculator
+
+This Python project generates a standalone interactive HTML chart for exploring estimated retirement benefits at claiming ages from 62 through 70.
+
+The browser interface allows users to:
+
+- Enter a date of birth and review the calculated full retirement age.
+- Compare estimated benefit percentages at different claiming ages.
+- Enter an estimated monthly benefit at full retirement age to explore monthly and annual amounts.
+- Adjust the chart without rerunning Python.
+
+**Explore the project:**
+
+- [Python source](Python-Portfolio/SSA-Retirement-Calculator/SSA_Retirement_Calc.py)
+- [Interactive HTML file](Python-Portfolio/SSA-Retirement-Calculator/social_security_interactive.html)
+- [Setup and usage instructions](Python-Portfolio/SSA-Retirement-Calculator/readme.md)
+
+Download the HTML file and open it in a browser to use the interactive interface. It is an educational estimator, not an official Social Security benefit determination.
+
+## Professional Background
+
+### Plymouth Rock Assurance
+
+- Experience with third-party data integrations in insurance workflows, including CARFAX.
+- Validation of REST API exchanges and XML/XSLT data transformations.
+- Python parsing and structured data handling.
+- Data validation, testing, and investigation of discrepancies.
+
+### TD Bank and Cape Cod Five
+
+- Experience in banking and customer-focused financial services.
+- Business-process understanding, clear communication, and attention to data accuracy.
+
+## Skills Demonstrated
+
+| Area | Skills |
 | --- | --- |
-| **Business Analysis** | Business-process understanding, requirements communication, documentation, cross-functional collaboration |
-| **Quality Assurance** | Functional testing, data validation, defect investigation, integration testing |
-| **APIs & Data Exchange** | REST APIs, XML, XSLT, third-party integration validation |
-| **Programming & Data** | Python, data parsing, structured data handling |
-| **Areas of Continued Learning** | AI-assisted workflows, data analytics, Power BI, and modern development tools |
+| Data analytics | pandas, Excel data preparation, Power BI reporting |
+| Database integration | SQL Server, Microsoft ODBC, pyodbc, parameterized inserts |
+| Programming | Python scripting, validation, data parsing, HTML generation |
+| API integrations | Kaggle API, REST API validation, XML, XSLT |
+| Quality assurance | Functional testing, integration testing, data validation, defect investigation |
+| Business analysis | Requirements communication, process understanding, documentation |
 
-## Featured Portfolio Project
-
-### [Social Security Retirement Calculator](Python-Portfolio/SSA-Retirement-Calculator)
-
-A Python-based retirement-planning project that explores **Social Security claiming ages, estimated benefits, and break-even comparisons**.
-
-**What the project demonstrates:**
-- Translating a real-world financial question into software logic.
-- Building interactive, chart-based explanations of benefit scenarios.
-- Working with date-of-birth inputs and retirement eligibility concepts.
-- Presenting numerical results in a way that is easier to understand and compare.
-
-Explore the project folder for its source files and usage instructions.
-
-## Certifications & Professional Development
-
-See the [Certifications folder](Certifications) for certificates, training records, and other credentials as they are added.
-
-## Education
+## Education and Professional Development
 
 **Suffolk University**  
 Bachelor of Arts in Advertising  
 Minor in Information Systems
 
-## What's Next
+The [Certifications folder](Certifications/) provides a place for training records and credentials as they are added.
 
-I'm continuing to expand this portfolio with examples of:
-- **API and QA testing:** Sample test plans, data-validation examples, and integration test cases using non-proprietary data.
-- **Business analysis:** Requirements, user stories, acceptance criteria, and process documentation.
-- **Data analytics:** Python and Power BI projects that communicate useful business insights.
-- **Applied AI:** Practical experiments with AI tools, automation, and responsible AI-assisted workflows.
+## Repository Navigation
 
-*These are areas for future portfolio work, not claims that those projects are already published.*
+- [APIs and Power BI](APIs%20and%20Power%20BI/) — Call center import and reporting project.
+- [Python Portfolio](Python-Portfolio/) — Python applications and interactive tools.
+- [Certifications](Certifications/) — Professional development documentation.
 
 ## Connect
 
-- **GitHub:** [TylerATreadway](https://github.com/TylerATreadway)
+[Tyler A. Treadway on GitHub](https://github.com/TylerATreadway)
 
 ---
 
-*Portfolio examples are intended for demonstration and learning. Employer-confidential code, data, and documentation are not included.*
-Displaying README.md.
+These projects are presented for demonstration and learning.
+
+Displaying README-3.md.
